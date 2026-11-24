@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>정하진 | Digital Life</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg:#111214;
+  --phone:#17191c;
+  --surface:#22252a;
+  --surface2:#292d33;
+  --surface3:#333840;
+  --text:#f1f0ed;
+  --muted:#999da5;
+  --dim:#666b74;
+  --accent:#c2a783;
+  --accent2:#e0c9a7;
+  --blue:#8199b8;
+  --line:rgba(255,255,255,.075);
+  --green:#8da78e;
+  --radius:17px;
+}
+
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:#101113;
+  color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+button {font:inherit}
+button, [data-action], [data-open] {
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+button:active,[data-action]:active,.app-icon:active {
+  transform:scale(.96);
+  filter:brightness(1.2);
+}
+.phone {
+  width:min(410px,100%);
+  height:min(880px,calc(100dvh - 36px));
+  min-height:570px;
+  position:relative;
+  background:var(--phone);
+  border:7px solid #303238;
+  border-radius:43px;
+  overflow:hidden;
+  box-shadow:0 25px 100px rgba(0,0,0,.65),inset 0 0 0 1px #505258;
+}
+.phone:before {
+  content:"";
+  position:absolute;
+  width:90px;height:23px;
+  border-radius:20px;
+  background:#090a0b;
+  top:8px;left:50%;
+  transform:translateX(-50%);
+  z-index:100;
+  pointer-events:none;
+}
+.status {
+  position:absolute;
+  z-index:110;
+  top:0;left:0;right:0;
+  height:38px;
+  padding:9px 22px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font:600 11px 'DM Sans',sans-serif;
+  pointer-events:none;
+  color:white;
+}
+.status-right {display:flex;gap:6px;align-items:center}
+.battery {
+  width:20px;height:10px;
+  border:1px solid rgba(255,255,255,.85);
+  border-radius:3px;
+  position:relative;
+  padding:1px;
+}
+.battery:after {
+  content:"";position:absolute;
+  right:-3px;top:2px;
+  width:2px;height:4px;
+  background:white;
+}
+.battery-fill {width:84%;height:100%;background:#a9c39d;border-radius:1px}
+.screen {
+  position:absolute;
+  inset:0;
+  padding-top:38px;
+  padding-bottom:28px;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateX(18px);
+  transition:opacity .19s ease,transform .22s ease,visibility .19s;
+  overflow:hidden;
+  background:#17191d;
+}
+.screen.active {
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateX(0);
+  z-index:2;
+}
+.screen-content {
+  height:100%;
+  overflow-y:auto;
+  scrollbar-width:none;
+  overscroll-behavior:contain;
+}
+.screen-content::-webkit-scrollbar {display:none}
+.navbar {
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:27px;
+  z-index:120;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(18,19,21,.82);
+  backdrop-filter:blur(15px);
+}
+.navbar button {
+  width:105px;height:5px;
+  border:0;border-radius:10px;
+  background:#d6d6d6;
+  padding:0;
+}
+button {border:0;color:inherit}
+.header {
+  height:58px;
+  padding:0 19px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(23,25,29,.95);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.header-title {font-size:17px;font-weight:700}
+.back {
+  background:none;
+  font-size:25px;
+  width:42px;height:44px;
+  color:var(--text);
+  text-align:left;
+}
+.header-action {
+  min-width:40px;height:42px;
+  background:none;color:var(--accent2);
+  font-size:13px;
+}
+.section {padding:19px}
+.section-title {
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:.7px;
+  margin:20px 0 11px;
+}
+.card {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:15px;
+  margin-bottom:11px;
+}
+.muted {color:var(--muted)}
+.small {font-size:11px}
+.tiny {font-size:10px;color:var(--muted)}
+.divider {height:1px;background:var(--line);margin:12px 0}
+.row {display:flex;align-items:center;gap:12px}
+.between {display:flex;align-items:center;justify-content:space-between}
+.avatar {
+  width:43px;height:43px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:#45474a;color:#e5d5c1;
+  font-size:16px;flex-shrink:0;
+}
+.avatar.gold {background:#625341}
+.avatar.blue {background:#3b4c60}
+.avatar.pink {background:#6a4d51}
+.pill {
+  padding:4px 8px;border-radius:20px;
+  font-size:10px;background:#393d42;color:#c6c8cb;
+}
+.accent {color:var(--accent2)}
+.app-icon {
+  width:53px;height:53px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  position:relative;
+  box-shadow:0 3px 9px rgba(0,0,0,.25);
+  transition:transform .12s;
+}
+.app-label {
+  font-size:10px;
+  text-align:center;
+  margin-top:6px;
+  color:white;
+  white-space:nowrap;
+}
+.app-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:19px 8px;
+}
+.app-cell {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-width:0;
+  cursor:pointer;
+}
+.badge {
+  position:absolute;
+  right:-5px;top:-5px;
+  background:#d04e50;
+  color:white;
+  font:700 9px 'DM Sans';
+  border-radius:20px;
+  padding:3px 5px;
+  min-width:18px;
+  text-align:center;
+  border:2px solid #24272b;
+}
+.folder-icon {
+  width:55px;height:52px;
+  border-radius:13px;
+  background:#55565a;
+  display:grid;
+  grid-template-columns:repeat(2,17px);
+  gap:3px;
+  align-content:center;
+  justify-content:center;
+}
+.folder-icon span {
+  height:17px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;
+}
+.home-screen {
+  background:#292a2d;
+  position:relative;
+}
+.home-screen:before {
+  content:"";
+  position:absolute;inset:0;
+  background:
+  linear-gradient(180deg,rgba(15,15,17,.16),rgba(13,14,17,.04) 45%,rgba(12,13,15,.8) 100%),
+  radial-gradient(ellipse at 50% 40%,#74716c 0%,#39383a 58%,#1d1e20 100%);
+  pointer-events:none;
+}
+.home-screen:after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 38%,rgba(10,11,13,.38) 75%);
+  pointer-events:none;
+}
+.wallpaper-person {
+  position:absolute;
+  top:15%;left:50%;
+  transform:translateX(-50%);
+  width:205px;height:275px;
+  border-radius:105px 105px 30px 30px;
+  background:linear-gradient(150deg,#c9c2b4,#a9a397 45%,#6f7473);
+  opacity:.23;
+  filter:blur(1px);
+  pointer-events:none;
+}
+.home-clock {
+  position:absolute;
+  top:78px;left:0;right:0;
+  text-align:center;
+  z-index:1;
+  text-shadow:0 2px 15px #222;
+}
+.home-clock .time {font:300 57px 'DM Sans';letter-spacing:-3px}
+.home-clock .date {font-size:12px;color:#e5dfd4;margin-top:2px}
+.home-quote {
+  position:absolute;
+  top:220px;
+  left:0;right:0;
+  text-align:center;
+  z-index:1;
+  font-size:11px;
+  color:#e6ded1;
+  letter-spacing:.2px;
+}
+.home-bottom {
+  position:absolute;
+  bottom:45px;left:15px;right:15px;
+  z-index:3;
+}
+.widget {
+  background:rgba(22,24,27,.74);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:17px;
+  padding:12px 14px;
+  margin-bottom:15px;
+}
+.weather-icon {font-size:26px}
+.widget-small {font-size:10px;color:#c1c1c1}
+.widget-large {font-size:20px;font-weight:600}
+.home-icons {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px 4px;
+  margin-bottom:15px;
+}
+.dock {
+  background:rgba(25,26,29,.82);
+  border-radius:22px;
+  padding:10px 8px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  backdrop-filter:blur(15px);
+}
+.dock .app-icon {width:49px;height:49px}
+.app-page {padding-bottom:25px}
+.profile {
+  text-align:center;padding:24px 15px 20px;
+}
+.profile-avatar {
+  width:65px;height:65px;border-radius:50%;
+  margin:auto auto 10px;
+  background:#333940;
+  display:flex;align-items:center;justify-content:center;
+  font-size:27px;
+}
+.list-item {
+  min-height:67px;
+  display:flex;align-items:center;
+  padding:10px 15px;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+.list-item:last-child {border-bottom:0}
+.list-main {flex:1;min-width:0}
+.list-title {font-size:13px;font-weight:600}
+.list-sub {font-size:11px;color:var(--muted);margin-top:4px}
+.list-end {font-size:10px;color:var(--muted);text-align:right}
+.searchbox {
+  background:#2a2d32;border-radius:12px;
+  padding:12px 14px;
+  color:#a8a9ac;
+  font-size:12px;
+  margin-bottom:15px;
+}
+.chat-bubble {
+  max-width:79%;
+  padding:11px 13px;
+  border-radius:15px;
+  font-size:12px;
+  line-height:1.65;
+  word-break:keep-all;
+  position:relative;
+}
+.chat-bubble.mine {
+  background:#bca483;color:#24221f;
+  border-radius:15px 4px 15px 15px;
+  margin-left:auto;
+}
+.chat-bubble.theirs {
+  background:#30343a;color:#f1f0ed;
+  border-radius:4px 15px 15px 15px;
+}
+.chat-line {display:flex;gap:7px;margin-bottom:13px;align-items:flex-end}
+.chat-time {font-size:9px;color:#81858b;white-space:nowrap}
+.chat-date {
+  text-align:center;
+  margin:17px auto;
+  font-size:10px;
+  color:#a2a4a9;
+  background:#292d32;
+  border-radius:20px;
+  width:max-content;padding:5px 12px;
+}
+.chat-input {
+  position:sticky;bottom:0;
+  padding:10px 12px;
+  background:#22252a;
+  display:flex;gap:8px;
+  border-top:1px solid var(--line);
+}
+.chat-input input {
+  flex:1;min-width:0;
+  background:#35383e;border:0;border-radius:20px;
+  padding:11px 14px;color:white;outline:none;
+}
+.chat-input button {
+  width:43px;height:43px;border-radius:50%;
+  background:var(--accent);color:#25221e;
+}
+.gallery {
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:3px;
+}
+.photo {
+  aspect-ratio:1;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:#3d4145;
+  font-size:35px;
+  position:relative;
+  overflow:hidden;
+}
+.photo:nth-child(3n+1) {background:#4d4a45}
+.photo:nth-child(3n+2) {background:#42494a}
+.photo:nth-child(3n) {background:#5a4e49}
+.photo span {filter:drop-shadow(0 3px 5px #222)}
+.photo-detail {
+  height:300px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:100px;
+  background:linear-gradient(145deg,#57544d,#30363b);
+  border-radius:16px;
+}
+.note-content {
+  white-space:pre-line;
+  font-size:13px;
+  line-height:2;
+  color:#dedbd4;
+}
+.note-paper {
+  background:#25282c;
+  padding:20px;
+  border-radius:14px;
+  min-height:250px;
+}
+.event {
+  display:flex;gap:13px;padding:13px 0;
+  border-bottom:1px solid var(--line);
+}
+.event-date {
+  width:45px;text-align:center;
+  font-size:12px;color:var(--accent2);
+}
+.event-date strong {font:600 21px 'DM Sans';display:block}
+.album-cover {
+  width:100%;aspect-ratio:1.4;
+  display:flex;align-items:center;justify-content:center;
+  font-size:50px;border-radius:12px;
+  background:linear-gradient(145deg,#5a554d,#292e33);
+}
+.track {
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--line);
+}
+.track-art {
+  width:43px;height:43px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  background:#45413d;font-size:20px;
+}
+.progress {
+  height:3px;border-radius:10px;background:#444;
+  margin:17px 0 8px;overflow:hidden;
+}
+.progress span {display:block;width:37%;height:100%;background:var(--accent)}
+.keyboard {
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;
+}
+.keyboard span {
+  background:#34383d;border-radius:8px;padding:7px 10px;font-size:12px;
+}
+.toast {
+  position:absolute;bottom:50px;left:50%;
+  transform:translate(-50%,15px);
+  background:#ded0bb;color:#29251f;
+  padding:10px 17px;border-radius:20px;
+  font-size:11px;white-space:nowrap;
+  opacity:0;pointer-events:none;
+  transition:.2s;z-index:200;
+}
+.toast.show {opacity:1;transform:translate(-50%,0)}
+.lock {
+  background:linear-gradient(180deg,#282727,#575047 55%,#191a1b);
+}
+.lock-art {
+  position:absolute;top:26%;left:50%;
+  transform:translateX(-50%);
+  width:215px;height:250px;
+  border-radius:50%;
+  background:radial-gradient(ellipse at 40% 30%,#f2e9d6,#c8bda7 47%,#817c73 75%,#343434 100%);
+  box-shadow:0 18px 50px rgba(0,0,0,.6);
+  opacity:.9;
+}
+.lock-art:after {
+  content:"";
+  position:absolute;
+  width:140px;height:80px;
+  left:37px;top:120px;
+  background:linear-gradient(160deg,#e6ddca,#a9a08e);
+  border-radius:50%;
+  filter:blur(1px);
+}
+.lock-time {
+  position:absolute;top:90px;left:0;right:0;
+  text-align:center;font:300 67px 'DM Sans';
+  z-index:2;
+}
+.lock-date {
+  position:absolute;top:169px;left:0;right:0;
+  text-align:center;font-size:13px;z-index:2;
+}
+.lock-bottom {
+  position:absolute;bottom:42px;left:0;right:0;
+  text-align:center;z-index:2;
+}
+.lock-bottom button {
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  padding:13px 27px;border-radius:30px;
+  font-size:12px;
+}
+.lock-hint {font-size:10px;color:#ddd;margin-bottom:15px}
+.lock-screen {background:#292826}
+.lock-entry {position:absolute;left:18px;right:18px;bottom:34px;z-index:5;text-align:center}
+.lock-feedback {height:18px;margin-bottom:9px;font-size:11px;color:#ead7bd}
+.lock-dots {display:flex;justify-content:center;gap:12px;margin-bottom:13px}
+.lock-dot {width:9px;height:9px;border-radius:50%;border:1px solid rgba(255,255,255,.9)}
+.lock-dot.filled {background:#fff}
+.lock-keypad {display:grid;grid-template-columns:repeat(3,1fr);gap:7px;max-width:270px;margin:0 auto}
+.lock-key {height:43px;border-radius:13px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:19px;touch-action:manipulation}
+.lock-key:active {background:rgba(255,255,255,.3);transform:scale(.96)}
+.lock-top-hint {position:absolute;top:225px;left:0;right:0;text-align:center;font-size:11px;color:#eee;z-index:2}
+.empty {padding:40px 20px;text-align:center;color:var(--muted);font-size:12px}
+.tag {font-size:10px;color:var(--accent2);background:#413b32;border-radius:5px;padding:4px 7px}
+.fin-row {display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+.fin-row:last-child {border-bottom:0}
+.fin-val {font-weight:600;white-space:nowrap;text-align:right;font-family:'DM Sans','Noto Sans KR',sans-serif}
+.fin-quote {background:var(--surface2);border-left:2px solid var(--accent);padding:10px 12px;border-radius:8px;font-size:11px;line-height:1.7;color:#dcd8d0;margin-top:10px}
+input {font:inherit}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="status">
+    <span id="statusTime">13:51</span>
+    <div class="status-right">
+      <span>5G</span>
+      <span>▂▄▆</span>
+      <span>⌁</span>
+      <div class="battery"><div class="battery-fill"></div></div>
+      <span>84%</span>
+    </div>
+  </div>
+
+  <div id="screens"></div>
+
+  <div class="navbar">
+    <button data-action="home" aria-label="홈으로"></button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+'use strict';
+
+const $ = (s,root=document) => root.querySelector(s);
+const screens = $('#screens');
+const stack = [];
+let toastTimer = null;
+let currentChat = '■■ 씨 ♡';
+let currentAlbum = '■■ 씨';
+let currentPhoto = 0;
+let currentNote = '';
+let currentApp = '';
+let sentMessages = {};
+let playing = false;
+
+const conversations = {
+ '■■ 씨 ♡': [
+  ['date','2026년 11월 24일'],
+  ['them','오늘 훈련도 무사히 끝났어요?'],
+  ['me','네. 오늘 훈련 무사히 끝났습니다. 저녁 드셨어요?'],
+  ['them','아직요 ㅎㅎ 이제 퇴근하려고요!'],
+  ['me','많이 늦으셨네요. 오늘도 고생 많으셨습니다.'],
+  ['me','날씨가 많이 쌀쌀해졌는데 제가 골라드린 니트 입고 출근하셨습니까?'],
+  ['them','네! 따뜻해서 너무 좋아요 ♡'],
+  ['them','하진 씨가 골라준 거라 더 좋아요'],
+  ['me','다행입니다. 퇴근하시면 따뜻한 거 드세요.'],
+  ['them','하진 씨는요? 저녁 드셨어요?'],
+  ['me','아직입니다. ■■ 씨랑 같이 먹으려고 기다리고 있었습니다.'],
+  ['them','그럼 오늘은 같이 맛있는 거 먹어요!'],
+  ['me','좋습니다. 데리러 가겠습니다. 추우니까 안에서 기다리세요.'],
+  ['them','네에 ♡ 사랑해요'],
+  ['me','저도 사랑합니다. 조심히 기다리고 계세요.'],
+  ['date','어제'],
+  ['them','오늘 찍은 setlog 봤어요 ㅋㅋㅋ'],
+  ['them','하진 씨 그림자 너무 귀여워요'],
+  ['me','그림자도 알아봐 주셔서 감사합니다.'],
+  ['them','그림자만 봐도 하진 씨인 거 알아요!'],
+  ['me','다음에는 조금 더 잘 찍어보겠습니다.'],
+  ['them','지금도 충분히 좋아요.'],
+  ['me','보고 싶습니다.'],
+  ['them','저도요 ♡']
+ ],
+ '국가대표 선수단 단톡방': [
+  ['date','2026년 11월 24일'],
+  ['them','김민재: 다음 소집 일정 확인했습니다.'],
+  ['them','이도현: 다들 컨디션 관리 잘합시다.'],
+  ['them','박준호: 저녁 뭐 먹을 거예요?'],
+  ['them','김민재: 또 닭가슴살 아니냐 ㅋㅋ'],
+  ['them','이도현: 하진이는?'],
+  ['me','저는 정해둔 식단대로 먹겠습니다.'],
+  ['them','박준호: 역시 정하진 ㅋㅋ']
+ ],
+ '서울 라이커즈 FC 1군 공지방': [
+  ['date','2026년 11월 24일'],
+  ['them','구단 운영팀: 금일 훈련 일정 안내드립니다.'],
+  ['them','오후 14:00 팀 전술 훈련'],
+  ['them','오후 17:00 개인별 회복 및 컨디션 체크'],
+  ['them','구단 운영팀: 공지 확인 부탁드립니다.'],
+  ['me','확인했습니다.']
+ ],
+ '한국대 OB (지호형, 선우형, 찬)': [
+  ['date','어제'],
+  ['them','류선우: 야 정하진 살아 있냐'],
+  ['them','류선우: 사진'],
+  ['them','류선우: 오늘 밥 먹었는데 개맛있음'],
+  ['them','한지호: 적당히 해라.'],
+  ['them','강찬: ㅋㅋㅋㅋㅋㅋ'],
+  ['them','류선우: 하진이도 ■■ 씨랑 데이트하느라 바쁘겠지'],
+  ['me','형, 훈련 중이라 이제 확인했습니다.'],
+  ['them','한지호: 훈련이나 잘해라.']
+ ]
+};
+
+const calls = [
+ ['■■ 씨 ♡','수신','23:14','1시간 12분 전','♡'],
+ ['■■ 씨 ♡','발신','17:08','12분','♡'],
+ ['■■ 씨 ♡','수신','22:51','58분','♡'],
+ ['한지호 형','발신','18:03','3분','↗'],
+ ['■■ 씨 ♡','수신','21:47','1시간 04분','♡'],
+ ['류선우 형','수신','20:12','15분','↙'],
+ ['강찬','부재중','16:42','-','!'],
+ ['■■ 씨 ♡','발신','17:21','9분','♡'],
+ ['차승우 코치님(한국대)','발신','11/17','10분','↗'],
+ ['어머니','수신','11/16','2분','↙'],
+ ['누나','발신','11/15','2분','↗']
+];
+
+const albums = {
+ '■■ 씨': [
+  ['☕','구단 카페에서','카페에서 음료를 마시던 ■■ 씨'],
+  ['🧶','놀이공원','밝은 니트를 입고 웃던 순간'],
+  ['🍬','솜사탕','놀이공원에서 솜사탕을 들고'],
+  ['🍎','과일 깎기','앞치마를 두르고 과일을 깎던 뒷모습'],
+  ['🌇','퇴근길','함께 바라본 저녁 하늘'],
+  ['🤍','달항아리','거실 스탠드 아래 백자 달항아리'],
+  ['🌸','데이트','햇살 아래 웃는 얼굴'],
+  ['🫖','차 마시는 날','함께 차를 마시던 오후'],
+  ['♡','연속 촬영','눈을 감은 순간까지 전부 저장']
+ ],
+ '경기 분석': [
+  ['⚽','상대팀 PK','페널티킥 궤적 캡처'],
+  ['🥅','경기 영상','골문 위치 분석'],
+  ['📊','전술 분석','상대 공격 패턴'],
+  ['🧤','선방 기록','훈련 영상 캡처']
+ ],
+ '식단 및 컨디션': [
+  ['🥗','닭가슴살 샐러드','일일 식단 기록'],
+  ['🥤','수분 섭취','훈련 중 수분 보충'],
+  ['🍱','식단 기록','회복 식단'],
+  ['📈','컨디션','체력 기록']
+ ]
+};
+
+const notes = [
+ {title:'■■ 씨 관련 메모',folder:'기억할 것',date:'오늘',body:
+`• 커피는 산미 없는 고소한 원두 선호
+  (오후 늦게는 디카페인이나 따뜻한 차)
+
+• 추위를 많이 타니 차에 항상 무릎담요 챙겨두기
+
+• 발 사이즈 255mm
+• 손목이 가늘고 피부가 약해서 거친 소재 니트는 피할 것
+
+• 크리스마스가 생일이라 연말 분위기 좋아함
+  — 미리 레스토랑 알아보기`},
+ {title:'우리의 다섯 가지 약속',folder:'기억할 것',date:'2026.08.03',body:
+`1. 앞으로도 계속 정하진의 곁에서 응원해주기
+
+2. 서로의 심장을 책임지기
+
+3. 2026년 8월 3일, 첫 기념일로 기억하기
+
+4. 매일 연락하기
+
+5. ■■의 처음이자 마지막 사랑이 되어주기`},
+ {title:'잊지 말 것',folder:'기억할 것',date:'2026.11.20',body:
+`돌아갈 곳이 생겼다.
+
+절대 다치게 하지 말 것.`},
+ {title:'오늘 훈련 복기',folder:'훈련 복기',date:'오늘',body:
+`• 골문 앞 위치 선정
+• 세컨드 볼 반응 속도
+• 왼쪽 하단 방향 슈팅 대응
+• 다이빙 이후 빠른 기립 동작
+
+내일 오전 개인 훈련에서 다시 확인.`},
+ {title:'주간 훈련 체크',folder:'훈련 복기',date:'11.22',body:
+`월: 반응 속도
+화: 크로스 대응
+수: 회복
+목: 페널티킥 분석
+금: 실전 시뮬레이션`}
+];
+
+const searchTerms = [
+ '직장인 겨울 니트 브랜드',
+ '기념일 데이트 코스',
+ '비린내 없이 스테이크 굽는 법',
+ '■■ 씨가 좋아하는 화이트 와인 페어링',
+ '마른 체형 남성 가을 코디 추천',
+ '차 마실 때 곁들이기 좋은 수제 다과점 서울 리스트',
+ '홍보 마케팅 직무 야근 스트레스 푸는 법',
+ '첫 관계 이후 연인 몸살 기운 있을 때 좋은 음식',
+ '티라미수 맛집 포장 가능 여부',
+ '좋은 찻잎 고르는 기준',
+ '팬케이크 반죽 황금비율'
+];
+
+const setlogs = [
+ ['09:00','정하진','🌱','클럽하우스 잔디밭 위로 길게 늘어진 그림자','3초'],
+ ['09:00','■■','☕','사무실 책상 위 김이 모락모락 피어오르는 머그잔','4초'],
+ ['10:00','■■','🌇','버스 창밖으로 스쳐 지나가는 노을','3초'],
+ ['11:00','정하진','⚽','훈련장 한쪽에 놓인 축구공','3초'],
+ ['12:00','■■','🧁','점심시간에 먹은 작은 디저트','2초'],
+ ['14:00','정하진','🏋️','덤벨 옆에 놓인 물병','3초'],
+ ['15:00','■■','♡','카메라를 향해 몰래 만드는 손가락 하트','3초'],
+ ['17:00','정하진','🧤','땀에 젖은 손목에서 장갑 벨크로를 뜯는 손','4초'],
+ ['19:00','■■','🌆','퇴근길 저녁 하늘','3초'],
+ ['22:00','정하진','🏺','스탠드 불빛 아래 백자 달항아리','3초'],
+ ['23:00','정하진','✌','유리 다관 옆 화면 구석에 들어온 손가락 브이','3초']
+];
+
+const shopping = [
+ ['🧣','캐시미어 머플러','차콜 그레이','89,000원'],
+ ['🧣','캐시미어 머플러','오트밀 베이지','89,000원'],
+ ['🫖','커플 도자기 찻잔 세트','백자 2인 세트','65,000원'],
+ ['🥿','폭신한 실내용 슬리퍼','아이보리 255mm / 235mm','32,000원']
+];
+
+const tracks = [
+ ['🎹','Gymnopédie No.1','Erik Satie','클래식 피아노'],
+ ['🎹','Clair de Lune','Claude Debussy','클래식 피아노'],
+ ['🎸','밤의 산책','어쿠스틱 인디 밴드','■■ 씨가 흥얼거리던 노래'],
+ ['🎸','너와 나의 계절','어쿠스틱 인디 밴드','■■ 씨가 흥얼거리던 노래'],
+ ['🎸','작은 별','어쿠스틱 인디 밴드','■■ 씨가 흥얼거리던 노래'],
+ ['🎸','우리의 온도','어쿠스틱 인디 밴드','■■ 씨가 흥얼거리던 노래'],
+ ['🎸','다정한 하루','어쿠스틱 인디 밴드','■■ 씨가 흥얼거리던 노래']
+];
+
+const financeDetails = {
+ payslip: {
+  title: '2026년 9월 급여 명세서',
+  html: `
+  <div class="section">
+   <div class="card">
+    <div class="between"><span class="tag">서울 라이커즈 FC</span><span class="tiny">2026. 09. 25. 지급</span></div>
+    <div style="font-size:15px;font-weight:700;margin-top:10px">정하진 (No.1 / GK)</div>
+    <div class="tiny" style="margin-top:4px">프로 1군 주전 · 입단 7년 차 (만 29세) · 산정: 2026.09.01~09.30</div>
+    <div class="divider"></div>
+    <div class="between"><span class="muted small">차감 실수령액</span><b class="accent" style="font:700 20px 'DM Sans'">57,784,110원</b></div>
+   </div>
+
+   <div class="section-title">1. 지급 내역 (세전 합계: 77,830,000원)</div>
+   <div class="card">
+    <div class="fin-row"><div><div>월 기본급</div><div class="tiny">연봉 4억 2천만 원 1/12 분할</div></div><div class="fin-val">35,000,000원</div></div>
+    <div class="fin-row"><div><div>공식 경기 출전 수당</div><div class="tiny">선발 풀타임 4경기 × 300만 원</div></div><div class="fin-val">12,000,000원</div></div>
+    <div class="fin-row"><div><div>팀 승리 수당</div><div class="tiny">리그 승리 3경기 × A등급 500만 원</div></div><div class="fin-val">15,000,000원</div></div>
+    <div class="fin-row"><div><div>클린시트(무실점) 수당</div><div class="tiny">무실점 2회 달성 × 300만 원</div></div><div class="fin-val">6,000,000원</div></div>
+    <div class="fin-row"><div><div>국가대표 발탁 및 8강 포상금</div><div class="tiny">구단 특별 격려 일시금 (협회 별도)</div></div><div class="fin-val">8,000,000원</div></div>
+    <div class="fin-row"><div><div>초상권 및 구단 MD 배분금</div><div class="tiny">마킹 유니폼·굿즈 분기 정산</div></div><div class="fin-val">1,330,000원</div></div>
+    <div class="fin-row"><div><div>식대 및 훈련 보조비</div><div class="tiny">비과세 한도 포함 실비 정산</div></div><div class="fin-val">500,000원</div></div>
+    <div class="fin-quote">“예전 2군에 있을 때는 기본급만 적힌 얇은 명세서를 받았습니다. 지금 이렇게 수당 칸이 길어진 걸 보면, 포기하지 않고 골대를 지키길 정말 잘했다는 생각이 듭니다.”</div>
+   </div>
+
+   <div class="section-title">2. 공제 내역 (공제 합계: 20,045,890원)</div>
+   <div class="card">
+    <div class="fin-row"><div><div>사업·종합소득세 원천징수·분납</div><div class="tiny">고소득 구간 세무팀 유보금 포함</div></div><div class="fin-val">15,850,000원</div></div>
+    <div class="fin-row"><div><div>지방소득세</div><div class="tiny">산출 소득세의 10%</div></div><div class="fin-val">1,585,000원</div></div>
+    <div class="fin-row"><div><div>국민연금 및 건강보험료</div><div class="tiny">장기요양보험 포함 상한액 인근</div></div><div class="fin-val">1,420,890원</div></div>
+    <div class="fin-row"><div><div>한국프로축구선수협회(KPFA) 회비</div><div class="tiny">정회원 조합비 및 은퇴 지원 기금</div></div><div class="fin-val">200,000원</div></div>
+    <div class="fin-row"><div><div>서울 라이커즈 FC 상조회비</div><div class="tiny">선수단·스태프 경조사 적립</div></div><div class="fin-val">150,000원</div></div>
+    <div class="fin-row"><div><div>유소년 기금 및 한국대 체육부 후원</div><div class="tiny">매월 급여 자동 공제 약정</div></div><div class="fin-val">500,000원</div></div>
+    <div class="fin-row"><div><div>주거 안정 전세자금 대출 월 이자</div><div class="tiny">구단 제휴 우대 금리 적용</div></div><div class="fin-val">340,000원</div></div>
+    <div class="fin-quote">“세금이랑 회비로 빠져나가는 돈이 적지는 않지만 당연한 몫이라고 생각합니다. 모교 후배들 장갑 사는 데 보태라고 조금씩 보내는 후원금은 주전 달고 나서부터 한 번도 빼먹지 않았어요.”</div>
+   </div>
+  </div>`
+ },
+ cashflow: {
+  title: '월간 고정 지출 · 저축 배분',
+  html: `
+  <div class="section">
+   <div class="card">
+    <div class="between"><span class="tiny">실수령액 기준 배분</span><span class="pill">매월 25일 10:00 자동실행</span></div>
+    <div style="font:700 22px 'DM Sans';margin-top:8px">57,784,110원</div>
+    <div class="tiny" style="margin-top:4px">선저축·고정지출 34,900,000원 / 생활비 잔액 22,884,110원</div>
+   </div>
+
+   <div class="section-title">매월 25일 자동 이체 목록 (32,250,000원)</div>
+   <div class="card">
+    <div class="fin-row"><div><div>정기 적금 1 (제1금융권 우대)</div><div class="tiny">만기 1년 · 내 집 마련 종잣돈</div></div><div class="fin-val">15,000,000원</div></div>
+    <div class="fin-row"><div><div>정기 적금 2 (연금저축펀드·IRP)</div><div class="tiny">은퇴 대비 장기 세액공제</div></div><div class="fin-val">5,000,000원</div></div>
+    <div class="fin-row"><div><div>주택청약종합저축</div><div class="tiny">무주택 세대주 자격 유지</div></div><div class="fin-val">250,000원</div></div>
+    <div class="fin-row"><div><div>전세 대출 원금 중도 상환 적립</div><div class="tiny">별도 파킹통장 자동 이체</div></div><div class="fin-val">10,000,000원</div></div>
+    <div class="fin-row"><div><div>본가 부모님 용돈</div><div class="tiny">어머니와 합의한 월 정기 이체</div></div><div class="fin-val">2,000,000원</div></div>
+   </div>
+
+   <div class="section-title">월간 생활비 및 데이트 예비비 (25,534,110원)</div>
+   <div class="card">
+    <div class="fin-row"><div><div>고정 공과금 및 차량 유지비</div><div class="tiny">오피스텔 관리비·통신비·보험·유류비</div></div><div class="fin-val">약 1,150,000원</div></div>
+    <div class="fin-row"><div><div>개인 식비 및 컨디션 관리비</div><div class="tiny">고단백 식단·스포츠 마사지·보충제</div></div><div class="fin-val">약 1,500,000원</div></div>
+    <div class="fin-row"><div><div class="accent">데이트 및 예비 생활비 잔액</div><div class="tiny">■■ 씨와 맛있는 거 먹고 선물 사는 용도</div></div><div class="fin-val accent">22,884,110원</div></div>
+    <div class="fin-quote">“혼자 지낼 때는 식비랑 기름값 빼면 돈 쓸 일이 거의 없어서 통장에 그냥 쌓아두기만 했습니다. 요즘은 ■■ 씨랑 가고 싶은 곳도 많고 해드리고 싶은 것도 계속 생겨서, 돈 버는 보람이 뭔지 이제야 좀 알 것 같아요.”</div>
+   </div>
+  </div>`
+ },
+ savings: {
+  title: '금융 자산 현황',
+  html: `
+  <div class="section">
+   <div class="card">
+    <div class="tiny">예금 · 적금 · 연금 합계 (안전 지향형 포트폴리오)</div>
+    <div style="font:700 24px 'DM Sans';margin-top:8px" class="accent">215,450,000원</div>
+    <div class="tiny" style="margin-top:5px">원금 보장형 제1금융권 상품 및 초저위험 채권 위주 운용</div>
+   </div>
+
+   <div class="section-title">계좌별 상세 내역 (5개 계좌)</div>
+   <div class="card">
+    <div class="fin-row"><div><div>제1금융권 정기예금</div><div class="tiny">만기 일시지급식 · 주전 첫 재계약금 (연 3.6%)</div></div><div class="fin-val">100,000,000원</div></div>
+    <div class="fin-row"><div><div>우대 자유적금 누적 납입액</div><div class="tiny">올해 7월부터 월 1,500만 원 × 3회차 납입</div></div><div class="fin-val">45,000,000원</div></div>
+    <div class="fin-row"><div><div>파킹통장 (비상금·상환 예비비)</div><div class="tiny">KFA 국가대표 A매치 일비·16강 포상금 포함</div></div><div class="fin-val">42,200,000원</div></div>
+    <div class="fin-row"><div><div>연금저축펀드 · IRP 평가액</div><div class="tiny">국공채 및 초저위험 우량 채권형 ETF 운용</div></div><div class="fin-val">22,500,000원</div></div>
+    <div class="fin-row"><div><div>주택청약종합저축 누적액</div><div class="tiny">대학 졸업 직후 개설 · 매월 꾸준히 납입</div></div><div class="fin-val">5,750,000원</div></div>
+    <div class="fin-quote">“재테크 같은 건 머리가 복잡해서 잘 모릅니다. 한지호 형이 경기장 밖에서 신경 쓸 일 만들지 말고 무조건 은행 예금에만 넣어두라고 조언해 줬는데, 제 성격에도 그게 제일 잘 맞더라고요.”</div>
+   </div>
+  </div>`
+ },
+ networth: {
+  title: '실물 자산 · 부채 및 순자산',
+  html: `
+  <div class="section">
+   <div class="card">
+    <div class="between"><span class="tiny">최종 순자산 총액 (Net Worth)</span><span class="pill">자산 - 부채</span></div>
+    <div style="font:700 24px 'DM Sans';margin-top:8px" class="accent">385,150,000원</div>
+    <div class="tiny" style="margin-top:5px">9월 급여 입금분 합산 기준 약 4억 4,200만 원 도달 예정</div>
+   </div>
+
+   <div class="section-title">실물 자산 및 기타 (289,700,000원)</div>
+   <div class="card">
+    <div class="fin-row"><div><div>주거용 부동산 (전세 보증금)</div><div class="tiny">구단 인근 전용 59㎡ 신축 투룸 오피스텔 (보증보험 완료)</div></div><div class="fin-val">250,000,000원</div></div>
+    <div class="fin-row"><div><div>보유 차량 (감가상각 반영 시세)</div><div class="tiny">출고 2년 차 국산 준대형 블랙 SUV (할부 완납)</div></div><div class="fin-val">38,000,000원</div></div>
+    <div class="fin-row"><div><div>기타 동산 및 현금성 포인트</div><div class="tiny">주유 포인트 및 은행 통합 리워드</div></div><div class="fin-val">약 1,700,000원</div></div>
+   </div>
+
+   <div class="section-title">자산 및 부채 집계</div>
+   <div class="card">
+    <div class="fin-row"><div><div>금융 자산 합계</div><div class="tiny">예·적금·파킹통장·연금·청약</div></div><div class="fin-val">215,450,000원</div></div>
+    <div class="fin-row"><div><div>실물 및 기타 자산 합계</div><div class="tiny">전세 보증금·차량·포인트</div></div><div class="fin-val">289,700,000원</div></div>
+    <div class="fin-row"><div><b>총자산 합계</b></div><div class="fin-val"><b>505,150,000원</b></div></div>
+    <div class="fin-row"><div><div style="color:#dc7373">총부채 잔액 (전세자금 대출)</div><div class="tiny">버팀목·주거안정 제휴 대출 (내년 재계약 시 전액 상환 목표)</div></div><div class="fin-val" style="color:#dc7373">-120,000,000원</div></div>
+   </div>
+  </div>`
+ }
+};
+
+function toast(msg) {
+ const el=$('#toast');
+ el.textContent=msg;
+ el.classList.add('show');
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>el.classList.remove('show'),1800);
+}
+
+function clock() {
+ const d=new Date();
+ const time=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+ ['#statusTime','#homeTime','#lockTime'].forEach(sel=>{const el=$(sel);if(el)el.textContent=time;});
+}
+setInterval(()=>{try{clock()}catch(e){}},1000);
+
+function dateText() {
+ const d=new Date();
+ return d.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'long'});
+}
+
+function panel(id,html,cls='') {
+ const el=document.createElement('div');
+ el.className='screen '+cls;
+ el.dataset.screen=id;
+ el.innerHTML=html;
+ screens.appendChild(el);
+ return el;
+}
+
+function activate(id) {
+ [...screens.children].forEach(s=>{
+  s.classList.toggle('active',s.dataset.screen===id);
+ });
+}
+
+function openScreen(id,html,cls='') {
+ if(stack.length && stack[stack.length-1]===id) return;
+ panel(id,html,cls);
+ stack.push(id);
+ activate(id);
+}
+
+function replaceScreen(id,html) {
+ const old=$(`[data-screen="${stack[stack.length-1]}"]`);
+ if(old) old.remove();
+ panel(id,html);
+ stack[stack.length-1]=id;
+ activate(id);
+}
+
+function goBack() {
+ if(stack[stack.length-1]==='lock') return;
+ if(stack.length<=1){goHome();return}
+ const id=stack.pop();
+ const el=$(`[data-screen="${id}"]`);
+ if(el) el.remove();
+ activate(stack[stack.length-1]);
+}
+
+function goHome() {
+ if(stack[stack.length-1]==='lock') return;
+ stack.splice(1);
+ [...screens.children].forEach(s=>{
+  if(s.dataset.screen!=='home')s.remove();
+ });
+ activate('home');
+}
+
+function appHeader(title,action='') {
+ return `<div class="header">
+ <button class="back" data-action="back">‹</button>
+ <div class="header-title">${title}</div>
+ <button class="header-action" data-action="${action||'noop'}">${action==='add'?'＋':''}</button>
+ </div>`;
+}
+
+function appShell(title,body,action='') {
+ return `<div class="screen-content">${appHeader(title,action)}${body}</div>`;
+}
+
+function homeIcon(name,emoji,color,app,badge='') {
+ return `<div class="app-cell" data-open="${app}">
+ <div class="app-icon" style="background:${color}">${emoji}${badge?`<span class="badge">${badge}</span>`:''}</div>
+ <div class="app-label">${name}</div></div>`;
+}
+
+function folder(name,icons,apps) {
+ return `<div class="app-cell" data-open="${apps[0]}">
+ <div class="folder-icon">${icons.map(x=>`<span>${x}</span>`).join('')}</div>
+ <div class="app-label">${name}</div></div>`;
+}
+
+function homeHTML() {
+ return `<div class="screen-content home-screen">
+ <div class="wallpaper-person"></div>
+ <div class="home-clock">
+  <div class="time" id="homeTime">13:51</div>
+  <div class="date">${dateText()}</div>
+ </div>
+ <div class="home-quote">오늘도 무사히, 그리고 함께.</div>
+ <div class="home-bottom">
+  <div class="widget">
+   <div class="between">
+    <div>
+     <div class="widget-small">서울 · 현재 날씨</div>
+     <div class="widget-large">12° <span style="font-size:12px;font-weight:400">맑음</span></div>
+     <div class="widget-small">아침보다 쌀쌀한 저녁</div>
+    </div>
+    <div class="weather-icon">☀️</div>
+   </div>
+   <div class="divider"></div>
+   <div class="between">
+    <div>
+     <div class="widget-small">다음 일정</div>
+     <div style="font-size:12px;font-weight:600;margin-top:4px">오후 훈련 · 개인 회복</div>
+    </div>
+    <span class="tag">17:00</span>
+   </div>
+  </div>
+  <div class="home-icons">
+   ${homeIcon('전화','☎','#3c765d','phone')}
+   ${homeIcon('카카오톡','💬','#d4bb4f','chat','')}
+   ${homeIcon('사진','🌄','#566b7c','gallery')}
+   ${homeIcon('메모','📝','#a68e68','notes')}
+   ${folder('구단 및 훈련',['⚽','📊','🎥','🌙'],['training'])}
+   ${folder('일상',['🛒','🥬','🍽','📖'],['daily'])}
+   ${folder('금융',['🏦','💳','📈'],['finance'])}
+   ${homeIcon('검색','🔍','#657b92','search')}
+  </div>
+  <div class="dock">
+   ${homeIcon('Safari','🌐','#547d9a','browser')}
+   ${homeIcon('음악','🎵','#8b5860','music')}
+   ${homeIcon('캘린더','📅','#7c5555','calendar')}
+   ${homeIcon('setlog','📷','#565b5e','setlog')}
+  </div>
+ </div>
+ </div>`;
+}
+
+let lockDigits='';
+function lockMarkup() {
+ const keys=['1','2','3','4','5','6','7','8','9','del','0','enter'];
+ return `<div class="screen-content lock-screen">
+  <div class="lock-time" id="lockTime">13:51</div>
+  <div class="lock-date">${dateText()}</div><div class="lock-art"></div>
+  <div class="lock-top-hint">■■ 씨가 선물한 백자 달항아리</div>
+  <div class="lock-entry"><div class="lock-feedback" id="lockFeedback">비밀번호 8자리를 입력하세요</div>
+   <div class="lock-dots" id="lockDots">${Array.from({length:8},()=>'<span class="lock-dot"></span>').join('')}</div>
+   <div class="lock-keypad">${keys.map(k=>`<button type="button" class="lock-key" data-lock-key="${k}">${k==='del'?'⌫':k==='enter'?'확인':k}</button>`).join('')}</div>
+  </div></div>`;
+}
+function updateLockDots() {
+ const dots=$('#lockDots'); if(dots) [...dots.children].forEach((el,i)=>el.classList.toggle('filled',i<lockDigits.length));
+}
+function verifyLock() {
+ const feedback=$('#lockFeedback');
+ if(lockDigits==='08031225') {
+  const lock=$('[data-screen="lock"]'); if(lock)lock.remove();
+  stack.length=0;stack.push('home');activate('home');lockDigits='';toast('잠금이 해제되었습니다.');
+ } else {
+  lockDigits='';updateLockDots();if(feedback)feedback.textContent='비밀번호가 일치하지 않습니다. 다시 입력하세요.';
+ }
+}
+function makeHome() {
+ panel('home',homeHTML());
+ panel('lock',lockMarkup(),'active lock');
+ stack.push('home','lock');
+ clock();
+}
+makeHome();
+
+function chatList() {
+ const items=[
+  ['■■ 씨 ♡','오늘 훈련도 무사히 끝났어요?','방금','♡',''],
+  ['국가대표 선수단 단톡방','다들 컨디션 관리 잘합시다.','10:42','⚽','42'],
+  ['서울 라이커즈 FC 1군 공지방','확인 부탁드립니다.','어제','📢',''],
+  ['한국대 OB (지호형, 선우형, 찬)','적당히 해라.','어제','👥','']
+ ];
+ return `<div class="screen-content">${appHeader('카카오톡')}
+ <div class="section" style="padding-bottom:5px">
+  <div class="between"><span class="section-title" style="margin:0">채팅</span><span class="tiny">전체 4개</span></div>
+ </div>
+ ${items.map((x,i)=>`<div class="list-item" data-chat="${x[0]}">
+ <div class="avatar ${i===0?'gold':i===1?'blue':''}">${x[3]}</div>
+ <div class="list-main"><div class="list-title">${x[0]} ${i===0?'<span class="accent">📌</span>':''}</div>
+ <div class="list-sub">${x[1]}</div></div>
+ <div class="list-end">${x[2]}${x[4]?`<div style="margin-top:7px;color:#d2ae82">${x[4]}개 안 읽음</div>`:''}</div>
+ </div>`).join('')}
+ <div class="section"><div class="section-title">내 프로필</div>
+ <div class="card row"><div class="avatar">🧤</div><div><b style="font-size:13px">정하진</b><div class="tiny">상태 메시지 없음</div></div></div></div>
+ </div>`;
+}
+
+function openChat(name) {
+ currentChat=name;
+ const messages=(conversations[name]||[]).concat(sentMessages[name]||[]);
+ const html=`<div class="screen-content">
+ ${appHeader(name)}
+ <div class="section" style="padding:12px 13px 4px">
+ <div class="tiny" style="text-align:center">대화 내용 · 개인 보관 기록</div>
+ <div id="chatMessages" style="padding-top:12px">
+ ${messages.map(m=>{
+  if(m[0]==='date')return `<div class="chat-date">${m[1]}</div>`;
+  const mine=m[0]==='me';
+  return `<div class="chat-line" style="${mine?'justify-content:flex-end':''}">
+  ${!mine?'<div class="avatar" style="width:29px;height:29px;font-size:11px">♡</div>':''}
+  <div class="chat-bubble ${mine?'mine':'theirs'}">${escapeHTML(m[1])}</div>
+  <span class="chat-time">${mine?'읽음':''}</span>
+  </div>`;
+ }).join('')}
+ </div>
+ </div>
+ <div class="chat-input">
+  <input id="chatInput" placeholder="메시지 입력..." autocomplete="off">
+  <button data-action="send-chat">➤</button>
+ </div></div>`;
+ openScreen('chatroom-'+Date.now(),html);
+ setTimeout(()=>{
+  const el=$('#chatMessages');
+  if(el)el.scrollTop=el.scrollHeight;
+ },50);
+}
+
+function escapeHTML(s) {
+ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function phoneApp() {
+ return appShell('전화',`
+ <div class="section">
+  <div class="card">
+   <div class="between"><span class="muted small">즐겨찾기</span><span>♡</span></div>
+   <div class="row" style="margin-top:14px">
+    <div class="avatar gold">♡</div><div><b style="font-size:14px">■■ 씨 ♡</b><div class="tiny">가장 자주 통화하는 사람</div></div>
+    <button class="header-action" data-action="call">☎</button>
+   </div>
+  </div>
+  <div class="section-title">최근 통화</div>
+ </div>
+ ${calls.map((c,i)=>`<div class="list-item" data-call="${i}">
+ <div class="avatar ${c[0].includes('■■')?'gold':''}">${c[4]}</div>
+ <div class="list-main"><div class="list-title">${c[0]}</div>
+ <div class="list-sub">${c[1]==='부재중'?'<span style="color:#dc7373">부재중</span>':c[1]} · ${c[3]}</div></div>
+ <div class="list-end">${c[2]}</div>
+ <button class="header-action" data-call-action="${i}">☎</button>
+ </div>`).join('')}
+ <div class="section"><div class="tiny">알 수 없는 번호 및 스팸 전화는 차단되어 있습니다.</div></div>
+ `);
+}
+
+function callDetail(i) {
+ const c=calls[i];
+ openScreen('call-detail-'+i,appShell('통화 정보',`
+ <div class="profile"><div class="profile-avatar">${c[4]}</div>
+ <div style="font-size:20px;font-weight:700">${c[0]}</div>
+ <div class="muted small" style="margin-top:5px">${c[1]} 통화 · ${c[2]}</div>
+ </div>
+ <div class="section">
+ <div class="card">
+ <div class="between"><span class="muted small">통화 시간</span><b>${c[3]}</b></div>
+ <div class="divider"></div>
+ <div class="between"><span class="muted small">연락처 유형</span><span>저장된 연락처</span></div>
+ </div>
+ <button class="card" style="width:100%;text-align:center;color:var(--accent2)" data-action="call">전화 걸기　☎</button>
+ </div>`));
+}
+
+function galleryApp() {
+ return appShell('사진',`
+ <div class="section">
+  <div class="between"><b>앨범</b><span class="muted small">1,200개 항목</span></div>
+  <div class="section-title">나의 앨범</div>
+  <div class="app-grid" style="grid-template-columns:repeat(2,1fr);gap:12px">
+   ${Object.keys(albums).map((a,i)=>`<div data-album="${a}" class="card" style="margin:0;cursor:pointer;padding:9px">
+    <div class="album-cover">${['🤍','⚽','🥗'][i]}</div>
+    <div style="font-size:12px;font-weight:600;margin-top:9px">${a}</div>
+    <div class="tiny">${i===0?'400':i===1?'520':'280'}개 항목</div>
+   </div>`).join('')}
+  </div>
+  <div class="section-title">최근 항목</div>
+  <div class="gallery">
+  ${albums['■■ 씨'].slice(0,6).map((p,i)=>`<div class="photo" data-photo="${i}" data-album="■■ 씨"><span>${p[0]}</span></div>`).join('')}
+  </div>
+  <div class="section-title">즐겨찾는 항목　♡</div>
+  <div class="card"><div class="row"><span style="font-size:25px">♡</span><div><b style="font-size:12px">■■ 씨의 사진</b><div class="tiny">초점이 조금 나가도, 눈을 감아도 전부 저장</div></div></div></div>
+ </div>`);
+}
+
+function albumScreen(name) {
+ currentAlbum=name;
+ const photos=albums[name]||[];
+ openScreen('album-'+name,appShell(name,`
+ <div class="section">
+ <div class="between"><b>${name}</b><span class="tiny">${name==='■■ 씨'?400:name==='경기 분석'?520:280}개</span></div>
+ <div class="gallery" style="margin-top:15px">
+ ${photos.map((p,i)=>`<div class="photo" data-photo="${i}" data-album="${name}"><span>${p[0]}</span></div>`).join('')}
+ </div>
+ </div>`));
+}
+
+function photoDetail(album,index) {
+ const p=(albums[album]||[])[index];
+ if(!p)return;
+ currentPhoto=index;
+ openScreen('photo-'+album+'-'+index,appShell('사진 상세',`
+ <div class="section">
+ <div class="photo-detail">${p[0]}</div>
+ <div style="margin-top:20px;font-size:15px;font-weight:600">${p[1]}</div>
+ <div class="muted small" style="margin-top:5px">${p[2]}</div>
+ <div class="divider"></div>
+ <div class="between"><span class="muted small">앨범</span><span>${album}</span></div>
+ <div class="between" style="margin-top:12px"><span class="muted small">즐겨찾기</span><span class="accent">♥</span></div>
+ <div class="card" style="margin-top:20px;font-size:12px;line-height:1.8">
+ ${album==='■■ 씨'?'지우지 않고 전부 남겨두었습니다. 조금 흔들렸더라도 그날의 순간이니까요.':'개인 분석 및 기록용으로 저장한 사진입니다.'}
+ </div>
+ </div>`));
+}
+
+function notesApp() {
+ openScreen('notes',appShell('메모',`
+ <div class="section">
+ <div class="card">
+ <div class="between"><b>폴더</b><span class="tiny">2개</span></div>
+ <div class="row" style="margin-top:15px;justify-content:space-around">
+ <div data-note-folder="훈련 복기" style="cursor:pointer;text-align:center"><div style="font-size:25px">⚽</div><div class="small">훈련 복기</div><div class="tiny">2개</div></div>
+ <div data-note-folder="기억할 것" style="cursor:pointer;text-align:center"><div style="font-size:25px">♡</div><div class="small">기억할 것</div><div class="tiny">3개</div></div>
+ </div></div>
+ <div class="section-title">고정된 메모</div>
+ <div class="card" data-note="0" style="cursor:pointer;border-left:3px solid var(--accent)">
+ <div class="between"><b style="font-size:13px">📌 ■■ 씨 관련 메모</b><span class="tiny">고정</span></div>
+ <div class="list-sub">사소한 것도 잊지 않도록 하나씩 기록</div>
+ </div>
+ ${notes.slice(1).map((n,i)=>`<div class="list-item" data-note="${i+1}">
+ <div class="avatar">${n.folder==='기억할 것'?'♡':'⚽'}</div>
+ <div class="list-main"><div class="list-title">${n.title}</div><div class="list-sub">${n.body.slice(0,45).replace(/\n/g,' ')}...</div></div>
+ <div class="list-end">${n.date}</div>
+ </div>`).join('')}
+ </div>`));
+}
+
+function noteDetail(i) {
+ const n=notes[i];
+ if(!n)return;
+ currentNote=n.title;
+ openScreen('note-detail-'+i,appShell(n.title,`
+ <div class="section">
+ <div class="between"><span class="tag">${n.folder}</span><span class="tiny">${n.date} 수정</span></div>
+ <div class="note-paper" style="margin-top:17px">
+ <div style="font-size:17px;font-weight:700;margin-bottom:17px">${n.title}</div>
+ <div class="note-content">${escapeHTML(n.body)}</div>
+ </div>
+ <div class="tiny" style="margin-top:14px">정하진의 개인 메모</div>
+ </div>`));
+}
+
+function searchApp() {
+ openScreen('search',appShell('검색 기록',`
+ <div class="section">
+ <div class="searchbox">🔍　검색어를 입력해 보세요.</div>
+ <div class="between"><b>최근 검색어</b><span class="tiny">전체 기록</span></div>
+ ${searchTerms.map((x,i)=>`<div class="list-item" data-search="${i}">
+ <span class="muted">⌕</span><div class="list-main"><div class="list-title" style="font-weight:400">${x}</div></div><span class="tiny">↗</span>
+ </div>`).join('')}
+ <div class="section-title">최근 방문한 페이지</div>
+ ${[
+ ['📄','티라미수 맛집 공식 블로그','포장 가능 여부 확인'],
+ ['🍵','좋은 찻잎을 고르는 기준','전문 칼럼 · 읽기 목록'],
+ ['🥞','팬케이크 반죽 황금비율','요리 블로그 캡처'],
+ ['🧥','마른 체형 남성 겨울 코디','패션 정보']
+ ].map(x=>`<div class="list-item" data-page="${x[1]}"><span style="font-size:21px">${x[0]}</span><div class="list-main"><div class="list-title">${x[1]}</div><div class="list-sub">${x[2]}</div></div></div>`).join('')}
+ </div>`));
+}
+
+function searchDetail(i) {
+ const term=searchTerms[i];
+ openScreen('search-detail-'+i,appShell('검색 결과',`
+ <div class="section">
+ <div class="searchbox">🔍　${term}</div>
+ <div class="section-title">검색 기록에서 가져온 항목</div>
+ <div class="card">
+ <div class="list-title">${term}</div>
+ <div class="list-sub" style="line-height:1.8;margin-top:10px">
+ ■■ 씨에게 더 잘해드리고 싶어서 찾아본 기록입니다. 필요한 정보와 참고할 만한 내용을 정리해 둔 페이지입니다.
+ </div>
+ </div>
+ <div class="card"><div class="tiny">개인 검색 기록</div><div style="font-size:12px;margin-top:7px">검색한 내용은 브라우저 기록에 저장되어 있습니다.</div></div>
+ </div>`));
+}
+
+function setlogApp() {
+ openScreen('setlog',appShell('setlog',`
+ <div class="section">
+ <div class="between"><div><div class="tiny">PRIVATE ROOM</div><div style="font:700 26px 'DM Sans';margin-top:4px">0803</div></div><span class="pill">초대 전용</span></div>
+ <div class="card" style="margin-top:15px">
+ <div class="between"><div><div style="font-size:14px;font-weight:700">우리의 하루</div><div class="tiny">참여자 2명 · 하진, ■■</div></div><div style="font-size:24px">♡</div></div>
+ <div class="divider"></div>
+ <div class="between"><span class="tiny">정각마다 기록하는 2~4초</span><span class="accent small">무음 영상</span></div>
+ </div>
+ <div class="section-title">TODAY TIMELINE</div>
+ <div class="tiny" style="margin-bottom:12px">2026년 11월 24일 · 최근 기록</div>
+ <div style="border-left:1px solid #5c554b;margin-left:12px;padding-left:18px">
+ ${setlogs.slice().reverse().map((s,i)=>`<div class="card" data-setlog="${setlogs.length-1-i}" style="position:relative;padding:13px;margin-bottom:12px">
+ <div style="position:absolute;left:-24px;top:19px;width:9px;height:9px;border-radius:50%;background:var(--accent)"></div>
+ <div class="between"><b style="font-size:12px">${s[0]}</b><span class="tiny">${s[1]}</span></div>
+ <div style="font-size:36px;margin:13px 0">${s[2]}</div>
+ <div style="font-size:12px;line-height:1.6">${s[3]}</div>
+ <div class="tiny" style="margin-top:8px">무음 영상 · ${s[4]}</div>
+ </div>`).join('')}
+ </div>
+ </div>`));
+}
+
+function setlogDetail(i) {
+ const s=setlogs[i];
+ openScreen('setlog-detail-'+i,appShell('기록 상세',`
+ <div class="section">
+ <div class="card" style="text-align:center;padding:30px 15px">
+ <div style="font-size:95px">${s[2]}</div>
+ <div style="font:600 25px 'DM Sans';margin-top:15px">${s[0]}</div>
+ <div class="accent small" style="margin-top:8px">${s[1]}의 기록</div>
+ <div style="margin-top:22px;font-size:13px">${s[3]}</div>
+ <div class="tiny" style="margin-top:12px">소리 없는 ${s[4]} 영상</div>
+ </div>
+ <div class="tiny">이 기록은 0803 비공개 방의 두 사람에게만 공유됩니다.</div>
+ </div>`));
+}
+
+function calendarApp() {
+ const events=[
+ ['08','03','■■ 씨와 첫 기념일','주황색 · 특별한 날','♡'],
+ ['11','24','개인 회복 훈련','구단 훈련 일정','⚽'],
+ ['11','28','놀이공원 데이트','■■ 씨와 함께','♡'],
+ ['12','12','■■ 씨 프로젝트 마감일','응원 문자 보내기','♡'],
+ ['12','25','■■ 씨 생일','미리 레스토랑 예약하기','♡']
+ ];
+ openScreen('calendar',appShell('캘린더',`
+ <div class="section">
+ <div class="between"><span class="tiny">2026년</span><span class="pill">일정 관리</span></div>
+ <div style="font-size:24px;font-weight:700;margin:7px 0 18px">11월</div>
+ <div class="card">
+ <div class="between" style="font-size:11px;color:var(--muted)">
+ ${['일','월','화','수','목','금','토'].map(d=>`<span>${d}</span>`).join('')}
+ </div>
+ <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px 0;text-align:center;margin-top:14px;font-size:12px">
+ ${Array.from({length:30},(_,i)=>`<span style="${i+1===24?'background:#b99b74;color:#211f1c;border-radius:50%;width:29px;height:29px;display:flex;align-items:center;justify-content:center;margin:auto':''}">${i+1}</span>`).join('')}
+ </div>
+ </div>
+ <div class="section-title">등록된 일정</div>
+ ${events.map(e=>`<div class="event"><div class="event-date"><strong>${e[1]}</strong>${e[0]}월</div><div style="flex:1"><div class="list-title">${e[2]}</div><div class="list-sub">${e[3]}</div></div><span>${e[4]}</span></div>`).join('')}
+ </div>`));
+}
+
+function musicApp() {
+ openScreen('music',appShell('음악',`
+ <div class="section">
+ <div class="card">
+ <div class="tiny">NOW PLAYING</div>
+ <div style="font-size:52px;text-align:center;margin:20px">🎹</div>
+ <div style="text-align:center;font-size:16px;font-weight:700">Gymnopédie No.1</div>
+ <div class="tiny" style="text-align:center;margin-top:5px">Erik Satie</div>
+ <div class="progress"><span></span></div>
+ <div class="between tiny"><span>1:12</span><span>4:05</span></div>
+ <div class="between" style="justify-content:center;gap:28px;margin-top:18px">
+ <button data-action="previous" style="background:none;font-size:20px">⏮</button>
+ <button data-action="toggle-play" style="background:var(--accent);color:#26221e;border-radius:50%;width:49px;height:49px;font-size:20px">▶</button>
+ <button data-action="next" style="background:none;font-size:20px">⏭</button>
+ </div>
+ </div>
+ <div class="section-title">최근 재생 · ■■ 씨가 좋아하는 노래</div>
+ ${tracks.map((t,i)=>`<div class="track" data-track="${i}"><div class="track-art">${t[0]}</div><div class="list-main"><div class="list-title">${t[1]}</div><div class="list-sub">${t[2]}</div></div><span class="tiny">⋯</span></div>`).join('')}
+ <div class="card" style="margin-top:15px"><div class="between"><b style="font-size:12px">반복 재생</b><span class="accent">∞ 켜짐</span></div><div class="tiny" style="margin-top:7px">■■ 씨가 차에서 흥얼거렸던 노래 5곡</div></div>
+ </div>`));
+}
+
+function alarmsApp() {
+ openScreen('alarms',appShell('알람',`
+ <div class="section">
+ <div class="section-title">매일 반복</div>
+ ${[
+ ['06:30','기상','매일 · 소리 및 진동'],
+ ['14:00','훈련 출발','훈련 일정에 맞춰 확인'],
+ ['23:00','■■ 씨 잘 시간 확인','매일 · 무음 진동']
+ ].map((x,i)=>`<div class="card">
+ <div class="between">
+ <div><div style="font:500 31px 'DM Sans'">${x[0]}</div><div class="list-title">${x[1]}</div><div class="tiny" style="margin-top:4px">${x[2]}</div></div>
+ <button data-alarm="${i}" style="width:43px;height:27px;border-radius:20px;background:${i===1?'#59636c':'#9a8667'};color:white;font-size:11px">●</button>
+ </div></div>`).join('')}
+ <div class="section-title">알람 설정</div>
+ <div class="card tiny">정각마다 울리는 setlog 알림은 별도로 설정되어 있습니다.</div>
+ </div>`));
+}
+
+function shoppingApp() {
+ openScreen('shopping',appShell('장바구니',`
+ <div class="section">
+ <div class="between"><b>장바구니</b><span class="tiny">4개 상품</span></div>
+ ${shopping.map((x,i)=>`<div class="card" style="padding:13px;margin-top:12px">
+ <div class="row">
+ <div style="width:62px;height:65px;border-radius:10px;background:#393a39;display:flex;align-items:center;justify-content:center;font-size:29px">${x[0]}</div>
+ <div class="list-main">
+ <div class="list-title">${x[1]}</div>
+ <div class="list-sub">${x[2]}</div>
+ <div style="font-size:12px;font-weight:700;margin-top:8px">${x[3]}</div>
+ </div>
+ <button data-cart="${i}" style="background:none;color:#d0b79a;font-size:18px">♡</button>
+ </div></div>`).join('')}
+ <div class="card" style="margin-top:20px">
+ <div class="between"><span class="muted small">예상 합계</span><b>275,000원</b></div>
+ <div class="divider"></div>
+ <div class="tiny">아직 결제하지 않은 상품입니다.</div>
+ </div>
+ </div>`));
+}
+
+function dailyApp() {
+ openScreen('daily',appShell('일상',`
+ <div class="section">
+ <div class="app-grid" style="grid-template-columns:repeat(3,1fr);gap:20px">
+ ${homeIcon('쿠팡','📦','#68554b','coupang')}
+ ${homeIcon('마켓컬리','🥬','#584d62','kurly')}
+ ${homeIcon('배달의민족','🍜','#5c7b88','baemin')}
+ ${homeIcon('캐치테이블','🍽','#806f57','catchtable')}
+ ${homeIcon('만개의레시피','📖','#637957','recipe')}
+ </div>
+ <div class="section-title">최근 사용 기록</div>
+ <div class="card">
+ <div class="list-title">만개의레시피</div>
+ <div class="list-sub">팬케이크 · 스테이크 · 따뜻한 겨울 요리</div>
+ </div>
+ <div class="card">
+ <div class="list-title">캐치테이블</div>
+ <div class="list-sub">기념일 레스토랑 · 티라미수 맛집</div>
+ </div>
+ <div class="card">
+ <div class="list-title">마켓컬리</div>
+ <div class="list-sub">좋은 찻잎 · 디저트 재료 · 식재료</div>
+ </div>
+ </div>`));
+}
+
+function trainingApp() {
+ openScreen('training',appShell('구단 및 훈련',`
+ <div class="section">
+ <div class="card"><div class="between"><b>정하진</b><span class="tag">GOALKEEPER</span></div><div class="tiny" style="margin-top:7px">서울 라이커즈 FC · 1군</div></div>
+ ${[
+ ['⚽','구단 컨디션 관리','오늘 컨디션 · 정상'],
+ ['📊','피지컬 데이터 트래킹','신체 지표 및 회복 상태'],
+ ['🎥','Wyscout','해외 축구 전술 영상 아카이브'],
+ ['🌙','수면 패턴 측정기','지난밤 수면 기록']
+ ].map(x=>`<div class="list-item" data-tool="${x[1]}"><div class="avatar">${x[0]}</div><div class="list-main"><div class="list-title">${x[1]}</div><div class="list-sub">${x[2]}</div></div><span class="muted">›</span></div>`).join('')}
+ <div class="section-title">오늘의 훈련 기록</div>
+ <div class="card"><div class="between"><span class="muted small">훈련 출석</span><b class="accent">완료</b></div><div class="divider"></div><div class="between"><span class="muted small">컨디션</span><b>양호</b></div></div>
+ </div>`));
+}
+
+function financeApp() {
+ openScreen('finance',appShell('금융',`
+ <div class="section">
+  <div class="card">
+   <div class="between"><span class="tiny">최종 순자산 총액 (Net Worth)</span><span class="tag">안전 지향형</span></div>
+   <div style="font:700 26px 'DM Sans';margin-top:8px" class="accent">385,150,000원</div>
+   <div class="tiny" style="margin-top:6px">총자산 505,150,000원 · 전세자금 대출 -120,000,000원</div>
+   <div class="divider"></div>
+   <div class="between tiny"><span>9월 실수령액 (서울 라이커즈 FC)</span><b style="color:var(--text)">57,784,110원</b></div>
+  </div>
+
+  <div class="section-title">급여 및 통합 자산 내역</div>
+  ${[
+   ['📄','2026년 9월 급여 명세서','실지급 57,784,110원 (세전 7,783만 원)','payslip'],
+   ['💸','월간 고정 지출 · 저축 배분','자동이체 3,225만 원 · 생활비 잔액 2,288만 원','cashflow'],
+   ['🏦','금융 자산 현황 (5개 계좌)','예·적금·파킹통장·연금·청약 합계 215,450,000원','savings'],
+   ['🏠','실물 자산 및 부채 요약','전세 보증금 2.5억 · SUV 3,800만 · 대출 -1.2억','networth']
+  ].map(x=>`<div class="list-item" data-finance="${x[3]}">
+   <div class="avatar">${x[0]}</div>
+   <div class="list-main"><div class="list-title">${x[1]}</div><div class="list-sub">${x[2]}</div></div>
+   <span class="muted">›</span>
+  </div>`).join('')}
+
+  <div class="section-title">자산 관리 원칙</div>
+  <div class="card tiny" style="line-height:1.9">
+   매월 25일 10:00 급여 입금 즉시 자동 이체 실행<br>
+   변동성 투자 배제 · 원금 보장형 제1금융권 및 거주 안정 위주 운용
+  </div>
+ </div>`));
+}
+
+function financeDetail(key) {
+ const d=financeDetails[key];
+ if(!d)return;
+ openScreen('finance-'+key,appShell(d.title,d.html));
+}
+
+function browserApp() {
+ openScreen('browser',appShell('Safari',`
+ <div class="section">
+ <div class="searchbox">🔍　검색하거나 웹사이트 주소 입력</div>
+ <div class="section-title">즐겨찾기</div>
+ ${[
+ ['⚽','K리그 공식 데이터 포털'],
+ ['🌍','스포츠 전문 외신'],
+ ['📚','좋은 찻잎을 고르는 기준'],
+ ['🍰','티라미수 맛집 공식 블로그']
+ ].map(x=>`<div class="list-item" data-page="${x[1]}"><span style="font-size:23px">${x[0]}</span><div class="list-main"><div class="list-title">${x[1]}</div></div><span>›</span></div>`).join('')}
+ <div class="section-title">열려 있는 탭　12</div>
+ ${['마른 체형 남성 가을 코디 추천','차 마실 때 곁들이기 좋은 수제 다과점 서울 리스트','홍보 마케팅 직무 야근 스트레스 푸는 법','첫 관계 이후 연인 몸살 기운 있을 때 좋은 음식'].map(x=>`<div class="card" data-page="${x}" style="cursor:pointer;font-size:12px">${x}<div class="tiny" style="margin-top:6px">읽기 목록 및 최근 탭</div></div>`).join('')}
+ <div class="section-title">읽기 목록</div>
+ <div class="card" data-page="좋은 찻잎을 고르는 기준" style="cursor:pointer">🍵 좋은 찻잎을 고르는 기준</div>
+ <div class="card" data-page="티라미수 맛집 공식 블로그" style="cursor:pointer">🍰 티라미수 맛집 포장 가능 여부</div>
+ </div>`));
+}
+
+function socialApp() {
+ openScreen('social',appShell('Instagram',`
+ <div class="section">
+ <div class="card">
+ <div class="between"><b>정하진</b><span class="pill">알림 꺼짐</span></div>
+ <div class="row" style="margin-top:15px">
+ <div class="avatar">🧤</div><div><b style="font-size:14px">정하진</b><div class="tiny">서울 라이커즈 FC</div></div>
+ </div>
+ <div class="between" style="margin-top:17px;text-align:center">
+ <div><b>12</b><div class="tiny">게시물</div></div>
+ <div><b>—</b><div class="tiny">팔로워</div></div>
+ <div><b>—</b><div class="tiny">팔로잉</div></div>
+ </div>
+ </div>
+ <div class="section-title">최근 게시물</div>
+ <div class="gallery">
+ ${['⚽','🧤','🥅','🏟','⚽','📸'].map((x,i)=>`<div class="photo" data-social="${i}"><span>${x}</span></div>`).join('')}
+ </div>
+ <div class="tiny" style="margin-top:15px">구단 홍보팀 요청으로 운영 중인 계정입니다. 알림은 모두 꺼져 있습니다.</div>
+ </div>`));
+}
+
+function appDetail(app) {
+ const titles={
+ coupang:'쿠팡',kurly:'마켓컬리',baemin:'배달의민족',
+ catchtable:'캐치테이블',recipe:'만개의레시피'
+ };
+ const descriptions={
+ coupang:'생활용품 및 필요한 물건을 구매합니다.',
+ kurly:'신선 식재료와 좋은 찻잎을 살펴봅니다.',
+ baemin:'훈련 후 저녁 식사를 알아봅니다.',
+ catchtable:'■■ 씨와 갈 레스토랑을 찾아봅니다.',
+ recipe:'팬케이크와 스테이크 조리법을 공부합니다.'
+ };
+ openScreen('daily-detail-'+app,appShell(titles[app]||app,`
+ <div class="section">
+ <div class="card" style="text-align:center;padding:27px">
+ <div style="font-size:50px">${{coupang:'📦',kurly:'🥬',baemin:'🍜',catchtable:'🍽',recipe:'📖'}[app]}</div>
+ <div style="font-size:17px;font-weight:700;margin-top:12px">${titles[app]}</div>
+ <div class="muted small" style="margin-top:7px">${descriptions[app]}</div>
+ </div>
+ <div class="section-title">최근 확인한 항목</div>
+ ${['■■ 씨가 좋아할 만한 것','주말 데이트 준비','겨울철 따뜻한 음식'].map(x=>`<div class="list-item" data-page="${x}"><div class="list-main"><div class="list-title">${x}</div></div><span>›</span></div>`).join('')}
+ </div>`));
+}
+
+function openApp(app) {
+ currentApp=app;
+ switch(app) {
+  case 'phone':openScreen('phone',phoneApp());break;
+  case 'chat':openScreen('chat',chatList());break;
+  case 'gallery':openScreen('gallery',galleryApp());break;
+  case 'notes':notesApp();break;
+  case 'search':searchApp();break;
+  case 'setlog':setlogApp();break;
+  case 'calendar':calendarApp();break;
+  case 'music':musicApp();break;
+  case 'alarms':alarmsApp();break;
+  case 'shopping':shoppingApp();break;
+  case 'daily':dailyApp();break;
+  case 'training':trainingApp();break;
+  case 'finance':financeApp();break;
+  case 'browser':browserApp();break;
+  case 'social':socialApp();break;
+  case 'lock':
+   lockDigits='';openScreen('lock',lockMarkup(),'lock');clock();break;
+  default:toast('앱을 실행했습니다.');
+ }
+}
+
+function folderPage(type) {
+ const isDaily=type==='daily';
+ const items=isDaily?
+ [['📦','쿠팡','coupang'],['🥬','마켓컬리','kurly'],['🍜','배달의민족','baemin'],['🍽','캐치테이블','catchtable'],['📖','만개의레시피','recipe']]:
+ type==='finance'?
+ [['🏦','주거래 은행','finance'],['💳','저축 은행','finance'],['📈','증권사','finance']]:
+ [['⚽','구단 컨디션 관리','training'],['📊','피지컬 데이터','training'],['🎥','Wyscout','training'],['🌙','수면 패턴','training']];
+ openScreen('folder-'+type,appShell(isDaily?'일상':type==='finance'?'금융':'구단 및 훈련',`
+ <div class="section"><div class="app-grid" style="grid-template-columns:repeat(3,1fr);gap:24px">
+ ${items.map(x=>`<div class="app-cell" data-open="${x[2]}"><div class="app-icon" style="background:#484c50">${x[0]}</div><div class="app-label">${x[1]}</div></div>`).join('')}
+ </div></div>`));
+}
+
+function showPage(title) {
+ openScreen('webpage-'+Date.now(),appShell('페이지 정보',`
+ <div class="section">
+ <div class="card">
+ <div class="tiny">Safari · 방문 기록</div>
+ <div style="font-size:16px;font-weight:700;margin-top:12px">${escapeHTML(title)}</div>
+ <div class="divider"></div>
+ <div style="font-size:12px;line-height:1.9;color:#c5c4c0">
+ 개인적으로 찾아본 정보입니다. ■■ 씨에게 더 좋은 것을 해주기 위해 참고하고 있는 자료입니다.
+ </div>
+ </div>
+ <div class="section-title">저장된 페이지</div>
+ <div class="card"><div class="list-title">읽기 목록에 추가됨</div><div class="tiny" style="margin-top:6px">나중에 다시 읽을 수 있도록 보관했습니다.</div></div>
+ </div>`));
+}
+
+function sendChat() {
+ const input=$('#chatInput');
+ if(!input || !input.value.trim())return;
+ const val=input.value.trim();
+ if(!sentMessages[currentChat])sentMessages[currentChat]=[];
+ sentMessages[currentChat].push(['me',val]);
+ const msgs=$('#chatMessages');
+ if(msgs) {
+  const div=document.createElement('div');
+  div.className='chat-line';
+  div.style.justifyContent='flex-end';
+  const bubble=document.createElement('div');
+  bubble.className='chat-bubble mine';
+  bubble.textContent=val;
+  div.appendChild(bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+ }
+ input.value='';
+ toast('메시지가 기록되었습니다.');
+}
+
+document.addEventListener('click',e=>{
+ const actionEl=e.target.closest('[data-action]');
+ const openEl=e.target.closest('[data-open]');
+ const chatEl=e.target.closest('[data-chat]');
+ const photoEl=e.target.closest('[data-photo]');
+ const albumEl=e.target.closest('[data-album]');
+ const noteEl=e.target.closest('[data-note]');
+ const folderEl=e.target.closest('[data-note-folder]');
+ const callEl=e.target.closest('[data-call]');
+ const searchEl=e.target.closest('[data-search]');
+ const pageEl=e.target.closest('[data-page]');
+ const logEl=e.target.closest('[data-setlog]');
+ const toolEl=e.target.closest('[data-tool]');
+ const financeEl=e.target.closest('[data-finance]');
+ const cartEl=e.target.closest('[data-cart]');
+ const trackEl=e.target.closest('[data-track]');
+ const alarmEl=e.target.closest('[data-alarm]');
+ const socialEl=e.target.closest('[data-social]');
+
+ const lockKey=e.target.closest('[data-lock-key]');
+ if(lockKey) {
+  const key=lockKey.dataset.lockKey;
+  if(key==='del') lockDigits=lockDigits.slice(0,-1);
+  else if(key==='enter') {verifyLock();return;}
+  else if(/^\d$/.test(key) && lockDigits.length<8) lockDigits+=key;
+  updateLockDots();
+  if(lockDigits.length===8) verifyLock();
+  return;
+ }
+ if(actionEl) {
+  const a=actionEl.dataset.action;
+  switch(a) {
+   case 'back':goBack();break;
+   case 'home':goHome();break;
+   case 'unlock':
+    verifyLock();break;
+   case 'send-chat':sendChat();break;
+   case 'call':toast('통화 연결을 준비합니다.');break;
+   case 'toggle-play':
+    playing=!playing;actionEl.textContent=playing?'Ⅱ':'▶';
+    toast(playing?'재생 중':'일시 정지');break;
+   case 'previous':toast('이전 곡');break;
+   case 'next':toast('다음 곡');break;
+   case 'add':toast('새 항목을 준비합니다.');break;
+   default:break;
+  }
+  return;
+ }
+ if(openEl) {openApp(openEl.dataset.open);return}
+ if(chatEl) {openChat(chatEl.dataset.chat);return}
+ if(photoEl) {photoDetail(photoEl.dataset.album,Number(photoEl.dataset.photo));return}
+ if(albumEl) {albumScreen(albumEl.dataset.album);return}
+ if(noteEl) {noteDetail(Number(noteEl.dataset.note));return}
+ if(folderEl) {
+  const folderName=folderEl.dataset.noteFolder;
+  openScreen('note-folder-'+folderName,appShell(folderName,`
+  <div class="section">
+  ${notes.map((n,i)=>({n,i})).filter(x=>x.n.folder===folderName).map(x=>`<div class="list-item" data-note="${x.i}"><div class="avatar">${folderName==='기억할 것'?'♡':'⚽'}</div><div class="list-main"><div class="list-title">${x.n.title}</div><div class="list-sub">${x.n.date}</div></div><span>›</span></div>`).join('')}
+  </div>`));return;
+ }
+ if(callEl) {
+  const idx=Number(callEl.dataset.call);
+  if(callEl.dataset.callAction!==undefined) {
+   toast('통화 연결을 준비합니다.');
+  } else callDetail(idx);
+  return;
+ }
+ if(searchEl) {searchDetail(Number(searchEl.dataset.search));return}
+ if(pageEl) {showPage(pageEl.dataset.page);return}
+ if(logEl) {setlogDetail(Number(logEl.dataset.setlog));return}
+ if(toolEl) {showPage(toolEl.dataset.tool);return}
+ if(financeEl) {financeDetail(financeEl.dataset.finance);return}
+ if(cartEl) {toast(shopping[Number(cartEl.dataset.cart)][1]+' · 결제 전 상품');return}
+ if(trackEl) {
+  const t=tracks[Number(trackEl.dataset.track)];
+  toast('재생 목록: '+t[1]);return;
+ }
+ if(alarmEl) {
+  const i=Number(alarmEl.dataset.alarm);
+  alarmEl.style.background=alarmEl.style.background.includes('596')?'#9a8667':'#59636c';
+  toast(['기상 알람','훈련 출발 알람','■■ 씨 잘 시간 확인'][i]+' 설정 변경');return;
+ }
+ if(socialEl) {toast('게시물 기록을 확인했습니다.');return}
+});
+
+document.addEventListener('keydown',e=>{
+ if(e.key==='Enter' && e.target.id==='chatInput')sendChat();
+ if(e.key==='Escape')goBack();
+});
+
+let touchStart=0;
+$('#phone').addEventListener('touchstart',e=>{
+ touchStart=e.changedTouches[0].clientX;
+},{passive:true});
+$('#phone').addEventListener('touchend',e=>{
+ const diff=e.changedTouches[0].clientX-touchStart;
+ if(diff>110 && stack.length>1)goBack();
+},{passive:true});
+
+});
+</script>
+</body>
+</html>
